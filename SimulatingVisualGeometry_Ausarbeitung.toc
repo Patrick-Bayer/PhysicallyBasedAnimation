@@ -1,0 +1,16 @@
+\contentsline {section}{\numberline {1}Introduction}{2}
+\contentsline {section}{\numberline {2}Related Work}{2}
+\contentsline {subsection}{\numberline {2.1}Simulation Models}{2}
+\contentsline {subsection}{\numberline {2.2}Embedding of a Visual Mesh}{3}
+\contentsline {subsection}{\numberline {2.3}Fracturing and Tearing}{3}
+\contentsline {section}{\numberline {3}The Method}{4}
+\contentsline {subsection}{\numberline {3.1}Physical Mesh Creation}{4}
+\contentsline {subsection}{\numberline {3.2}The Simulation Method}{5}
+\contentsline {subsubsection}{\numberline {3.2.1}Generalized Shape Matching}{6}
+\contentsline {subsubsection}{\numberline {3.2.2}Generalized Position Based Dynamics}{8}
+\contentsline {subsubsection}{\numberline {3.2.3}Simulation Model}{8}
+\contentsline {subsection}{\numberline {3.3}Deforming Primitives}{9}
+\contentsline {subsection}{\numberline {3.4}The Visualization Mesh}{9}
+\contentsline {subsection}{\numberline {3.5}Plastic Deformation}{9}
+\contentsline {subsection}{\numberline {3.6}Subdivision, Fracturing and Tearing}{10}
+\contentsline {section}{\numberline {4}Conclusion}{12}

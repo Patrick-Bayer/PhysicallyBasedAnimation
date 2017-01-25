@@ -1,0 +1,361 @@
+\documentclass[t]{beamer}
+
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{tikz}
+\usepackage{lmodern}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\date{\today}
+
+\title{Simulating Visual Geometry}
+\author{Patrick Bayer}
+\linespread{1.5}
+
+\begin{document}
+	%Titelseite
+	\begin{frame}
+		\titlepage
+	\end{frame}
+	
+	%Inhaltsverzeichnis
+	\begin{frame}{Inhalt}
+		\tableofcontents
+	\end{frame}
+
+	\section{Konstruktion eines Simulationsnetzes}
+	\begin{frame}{Konstruktion eines Simulationsnetzes}
+		\textcolor{blue}{Input:}	
+		\begin{itemize}
+			\item beliebiges Netz zur Visualisierung bestehend aus drei- oder viereckigen Elementen
+			\item Meistens nicht zur Simulation geeignet
+			\item Physikalische Eigenschaften des Objektes (Materialdicke, \dots)
+		\end{itemize}
+		\textcolor{blue}{Idee:}
+			\begin{itemize}
+					\item Konvexe Formen als Primitive für das Simulationsnetz
+			\end{itemize}
+		\end{frame}
+
+	\begin{frame}{Konstruktion eines Simulationsnetzes}
+		\begin{columns}
+			\column{0.5\textwidth}
+				\centering
+				\includegraphics[scale = 0.4]{PhysicalMeshCreation_Step1.png}\\
+				(1) Elemente werden nach innen extrudiert.\\
+				$\Rightarrow$ volumetrische, konvexe Primitive
+			
+			\column{0.5\textwidth}
+					\centering
+					\includegraphics[scale = 0.31]{PhysicalMeshCreation_2}\\
+					(2) Bereits vorhandene konvexe Formen werden direkt in Primitive transformiert
+		\end{columns}
+	\end{frame}
+		
+	\begin{frame}{Konstruktion eines Simulationsnetzes}
+		\textcolor{blue}{Verbinden der Primitive:}
+		\begin{itemize}
+			\item Ausgangssituation: Ruhelage des Objektes
+			\item Graph mit Primitiven als Knoten und Verbindungen als Kanten
+			\item Zwei Primitive $\mathnormal{i,j}$ sind verbunden $\Leftrightarrow$ Die Primitive $\mathnormal{i,j}$ berühren oder überlappen sich
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Konstruktion eines Simulationsnetzes}
+		\textcolor{blue}{Verbinden von Subnetzen:}
+		\begin{itemize}
+			\item Verwendung von Joints definiert durch Boxen
+			\item Ball joint, Hinge-Joint, Slider Joints
+		\end{itemize}
+		\vfill
+		\centering
+		\includegraphics[scale = 0.3]{Joints.png}
+	\end{frame}
+	
+	\section{Die Simulationsmethode}
+	\begin{frame}{Die Simulationsmethode}
+		\begin{itemize}
+			\item \textbf{Oriented particle method}
+			\item Geometrisch motiviert
+			\item Einfach und schnell
+			\item Partikel haben neben den linearen Attributen (Position, Geschwindigkeit) eine Rotation und Winkelgeschwindigkeit
+			\item Basiert auf Shape Matching und Position Based Dynamics
+		\end{itemize}
+	\end{frame}	
+	
+	\begin{frame}{Die Simulationsmethode}
+		\textcolor{blue}{Generalized Shape Matching:}
+		\begin{itemize}
+			\item Arbeitet mit Partikeln ohne Verbindungen
+			\item Simulation von Elastizität
+		\end{itemize}
+		\begin{center}
+			\includegraphics[scale = 0.25]{ShapeMatching.png}
+		\end{center}
+		
+	\end{frame}
+
+	\begin{frame}{Die Simulationsmethode}
+		\begin{itemize}
+			\item Berechne $\mathbf{R}, \mathbf{\bar{t}}$ und $ \mathbf{t}$ durch Minimieren von \\
+					\begin{center}
+						$\sum\limits_{\mathnormal{i}}\mathnormal{\mathbf{m}_i}($\textbf{R}$(\mathnormal{\mathbf{\bar{x}}_i}-\mathnormal{\mathbf{\bar{t}}})+$\textbf{t}$-\mathnormal{\mathbf{x}_i})^2$
+					\end{center}
+			\item Es stellt sich heraus, dass \\
+					\begin{center}
+						$\mathnormal{\mathbf{\bar{t}}}=\mathnormal{\mathbf{\bar{x}}_{cm}}=\frac{\sum_{\mathnormal{i}}\mathnormal{\mathbf{m}_i} \mathnormal{\mathbf{\bar{x}}_i}}{\sum_{\mathnormal{i}}\mathnormal{\mathbf{m}_i}}$ and \textbf{t} $=\mathnormal{\mathbf{x}_{cm}}=\frac{\sum_{\mathnormal{i}}\mathnormal{\mathbf{m}_i \mathbf{x}_i}}{\sum_{\mathnormal{i}}\mathnormal{\mathbf{m}_i}}$
+					\end{center}
+			\item Seien $\mathnormal{\mathbf{q}_i}=\mathnormal{\mathbf{\bar{x}}_i}-\mathnormal{\mathbf{\bar{x}}_{cm}}$ und
+					$\mathnormal{\mathbf{p}_i}=\mathnormal{\mathbf{x}_i}-\mathnormal{\mathbf{x}_{cm}}$, dann minimiere \\
+					\begin{center}
+						$\sum\limits_{\mathnormal{i}}\mathnormal{\mathbf{m}_i}(\mathnormal{\mathbf{A}\mathbf{q}_i}-\mathnormal{\mathbf{p}_i})^2$
+					\end{center}
+					wobei \textbf{A} die optimale lineare Transformation ist.	
+								
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Die Simulationsmethode}
+		\begin{itemize}
+			\item Es stellt sich heraus, dass
+					\begin{center}
+						\textbf{A} $=(\sum\limits_{\mathnormal{i}}\mathnormal{\mathbf{m}_i}\mathnormal{\mathbf{p}_i}\mathnormal{\mathbf{q}_i^T})(\sum\limits_{i}\mathnormal{\mathbf{m}_i}\mathnormal{\mathbf{q}_i}\mathnormal{\mathbf{q}_i^T})^{-1}=\mathnormal{\mathbf{A}}_{pq}\mathnormal{\mathbf{A}}_{qq}$
+					\end{center}
+			\item $\mathnormal{\mathbf{A}}_{qq}$ ist symmetrisch, enthält also keine Rotation
+			\item Eine Polarzerlegung von $\mathnormal{\mathbf{A}}_{pq}$ liefert \\
+					\begin{center}
+						$\mathnormal{\mathbf{A}_{pq}}=$ \textbf{RS} wobei \textbf{S} $=\sqrt{\mathnormal{\mathbf{A}_{pq}^T} \mathnormal{\mathbf{A}_{pq}}}$ und \textbf{R} $=\mathnormal{\mathbf{A}_{pq}}\mathnormal{\mathbf{S^{-1}}}$
+					\end{center}
+			\item Berechne die Zielposition jedes Partikels
+					\begin{center}
+						$\mathnormal{\mathbf{g}_i}=\mathnormal{\mathbf{R}}(\mathnormal{\mathbf{\bar{x}}_i}-\mathnormal{\mathbf{\bar{x}}_{cm}})+\mathnormal{\mathbf{x}_{cm}}$ 
+					\end{center}
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Die Simulationsmethode}
+		\begin{itemize}
+			\item Co-Planarität oder Co-Linearität der Punkte $\Rightarrow$ Unstabilität
+			\item $\mathnormal{\mathbf{A}}_{pq}$ für zwei Partikelmengen mit Moment Matrizen $\mathnormal{\mathbf{A}_1}$ und $\mathnormal{\mathbf{A}_2}$ 
+				\begin{center}
+					$\mathnormal{\mathbf{A}}_{pq}=\sum\limits_{i}\mathnormal{\mathbf{m}_i \mathbf{x}_i \mathbf{\bar{x}}^T_i}-M\mathnormal{\mathbf{x}_{cm} \mathbf{\bar{x}}_{cm}^T}$
+				\end{center}
+			\item $\mathnormal{\mathbf{A}}_{pq}$ mit Moment Matrizen $\mathnormal{\mathbf{A}_i}$ für jedes einzelne Partikel
+				\begin{center}
+					$\mathnormal{\mathbf{A}_{pq}}=\sum\limits_{i}(\mathnormal{\mathbf{A}_i}+\mathnormal{\mathbf{m}_i \mathbf{x}_i \mathbf{\bar{x}}_i^T})-M\mathnormal{\mathbf{x}_{cm} \mathbf{\bar{x}}_{cm}^T}$
+				\end{center}
+				wobei $\mathnormal{M}$ die Summe der Massen $\mathbf{m}_i$ ist
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Die Simulationsmethode}
+		\begin{itemize}
+			\item Berechne die Moment Matrizen der einzelnen Partikel mit orthonormaler Orientierungsmatrix \textbf{R} für Kugeln mit Radius $r$ Volumen $V_r$ und Ellipsoide mit Radien $\mathnormal{a, b}$ und $\mathnormal{c}$ 
+					\begin{center}
+						$\mathnormal{\mathbf{A}_{sphere}}= \int_{V_r}\rho(\mathbf{Rx})\mathbf{x}^T dV = \frac{1}{5}mr^2\mathbf{R}$
+					\end{center}
+					\begin{center}	
+						$\mathnormal{\mathbf{A}_{ellipsoid}}= \frac{1}{5}m
+						\begin{bmatrix}
+						a^2& 0& 0 \\
+						0& b^2& 0 \\
+						0& 0& c^2
+						\end{bmatrix}\mathbf{R}$
+					\end{center}
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
+		\textcolor{blue}{Generalized Position Based Dynamics}
+		\begin{itemize}
+			\item Integrationsmechanismus zur Simulation von Partikeln
+			\item Partikel haben eine Position \textbf{x}, eine Geschwindigkeit \textbf{y}, eine Rotation \textbf{q} und eine Winkelgeschwindigkeit $\omega$
+			\item Schritt 1: Vorhersage von \textbf{x} und \textbf{q}
+					\begin{center}
+						$\mathbf{x}_p \leftarrow \mathbf{x}+\mathbf{v}\Delta \mathbf{t}$
+					\end{center}
+					\begin{center}
+						$\mathbf{q}_p \leftarrow [\frac{\mathbf{\omega}}{\vert \mathbf{\omega \vert}} sin(\frac{\vert \omega \vert \Delta \mathbf{t}}{2}), cos(\frac{\vert \omega \vert \Delta \mathbf{t}}{2})]\mathbf{q}$
+					\end{center}
+			\item Schritt 2: Korrektur der Positionen \textbf{x} anhand gegebener Zwangsbedingungen
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}{Die Simulationsmethode}
+		\begin{itemize}
+			\item Schritt 3: Update von \textbf{x}, \textbf{v}, \textbf{q}, $\mathbf{\omega}$
+				\begin{center}
+					$\mathbf{v} \leftarrow \frac{\mathbf{x}_p - \mathbf{x}}{\Delta \mathbf{t}}$
+				\end{center}
+				\begin{center}
+					$\mathbf{x} \leftarrow \mathbf{x}_p$
+				\end{center}
+					\begin{center}
+					$\mathbf{q} \leftarrow \mathbf{q}_p$
+				\end{center}
+				\begin{center}
+					$\omega \leftarrow \frac{axis(\mathbf{q}_p \mathbf{q}^{-1})*angle(\mathbf{q}_p \mathbf{q}^{-1})}{\Delta \mathbf{t}}$
+				\end{center}
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Die Simulationsmethode}
+		\textcolor{blue}{Collision Handling:}
+		\begin{itemize}
+			\item Finde Überschneidungen von Objektgrenzen
+			\item Identifiziere alle beteiligten Primitive und prüfe für jedes Paar, ob eine Kollision auftritt
+			\item Seperating Axis Theorem
+		\end{itemize}	
+	\end{frame}
+	
+	\section{Deformation der Primitive}
+	
+	\begin{frame}{Deformation der Primitive}
+		\begin{itemize}
+			\item Oriented Particle Method führt zu visuellen Fehlern (Lücken, \dots)
+		\end{itemize}
+		\begin{center}
+			\includegraphics[scale = 0.25]{Curtain_1.png}
+		\end{center}
+	\end{frame}
+
+	\begin{frame}{Deformation der Primitve}
+		\begin{itemize}
+			\item Konvexe Eigenschaft der Primitive muss erhalten bleiben
+					$\Rightarrow$ Nutze die Local Affine Deformation Matrix $\mathbf{A}_{pq}$
+			\item Berechne die Deformationsmatrix \textbf{D}
+				\begin{center}
+					$\mathnormal{\mathbf{D}}=\mathnormal{\mathbf{A \bar{A}^{-1}}}$
+				\end{center} wobei
+				\begin{center}
+					$\mathbf{\bar{A}}=\sum\limits_{i}(\mathnormal{\mathbf{\bar{A}}_i+\mathbf{m}_i\mathbf{\bar{x}}_i\mathbf{\bar{x}}_i^T})-M\mathnormal{\mathbf{\bar{x}}_{cm} \mathbf{\bar{x}}_{cm}^T}$
+				\end{center} und 
+				\begin{center}
+					$\mathnormal{\mathbf{A}_{i}}=\frac{1}{5}mr^2\mathbf{I}$
+				\end{center}
+		\end{itemize}
+	\end{frame}
+	
+	\section{Das Visualisierungsnetz}
+	\begin{frame}{Das Visualisierungsnetz}
+		\begin{center}
+			\includegraphics[scale = 0.275]{Curtain_2.png}
+		\end{center}
+		\begin{itemize}
+			\item Auch nach der Deformation der Primitve sind kleine Lücken zu finden
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}{Das Visualisierungsnetz}
+		\begin{minipage}{0.5\textwidth}
+			\begin{itemize}
+				\item Gruppiere die Eckpunkte der Primitive nach ihren Positionen
+				\item Berechne den Durchschnitt der Positionen
+				\item Die visuelle Position aller beteiligten Primitive ist der Durchschnitt der Positionen
+			\end{itemize}
+		\end{minipage}\begin{minipage}{0.5\textwidth}
+			\centering
+			\includegraphics[scale = 0.25]{PhysicalMeshCreation_Step234.png}
+		\end{minipage}
+	\end{frame}
+	
+	\section{Plastische Deformation}
+	\begin{frame}{Plastische Deformation}
+		\begin{itemize}
+			\item Behandle Objekte wie Starrkörper bis eine Deformation eintritt
+			\item Schwellenwert für die Geschwindigkeit an den Kontaktpunkten
+			\item Deformationsoffset = Geschwindigkeit * Time Step Size
+			\item Primitive, die nach einer Deformation einen Joint überschneiden, werden als fix betrachtet
+		\end{itemize}
+	\end{frame}
+	
+	\section{Brüche und Risse}
+	\begin{frame}{Brüche und Risse}
+		\textcolor{blue}{Trennbrüche:}
+		\begin{itemize}
+			\item Menge von verbundenen konvexen Polyedern als Bruchmuster bestehend aus Zellen
+		\end{itemize}
+			\begin{minipage}{0.6\textwidth}
+				\begin{itemize}
+					\item Finde Überschneidungen der Objektgrenzen mit dem Bruchmuster und alle beteiligten Primitive\\
+					$\Rightarrow$ Neues, unabhängiges Objekt bestehend aus allen Primitiven innerhalb einer Zelle 
+				\end{itemize}
+			\end{minipage}\begin{minipage}{0.4\textwidth}
+				\begin{center}
+					\centering
+					\includegraphics[scale = 0.2]{GlassFracture.png}
+				\end{center}
+			\end{minipage}
+	\end{frame}
+
+	\begin{frame}{Brüche und Risse}
+		\textcolor{blue}{Verformungsbrüche und Risse:}
+		\begin{minipage}{0.5\textwidth}
+			\begin{itemize}
+				\item Behalte alle resultierenden Teile nach einem Bruch in demselben Objekt\\
+				$\Rightarrow$ Das verfeinerte Netz erlaubt detaillierte Deformationen
+			\end{itemize}
+		\end{minipage}\begin{minipage}{0.5\textwidth}
+			\centering
+			\includegraphics[scale = 0.35]{Door1.png}
+	\end{minipage}
+
+	\end{frame}
+	
+	\begin{frame}{Brüche und Risse}
+		\begin{itemize}
+			\item Schwellenwert für die Distanz zwischen zwei Primitiven zur Identifizierung von Rissen
+			\item Nutzer kann Risslinien vordefinieren, indem nur eine Teilmenge der Verbindungen erlaubt ist zu reißen
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Brüche und Risse}
+		\textcolor{blue}{Visualisierung von Brüchen:}
+		\begin{itemize}
+			\item Das Bruchmuster wird im nicht deformierten Zustand ausgerichtet\\
+				$\Rightarrow$ Sowohl die alten als auch die neuen Primitive erhalten dieselbe \textit{id}
+		\end{itemize}
+		\begin{center}
+			\includegraphics[scale = 0.4]{Fracture.png}
+		\end{center}
+	\end{frame}
+	
+	\begin{frame}{Brüche und Risse}
+		\textcolor{blue}{Visualisierung von Rissen:}
+		\begin{itemize}
+			\item Berechne \textit{val(id)} als Anzahl der Primitve mit derselben \textit{id}
+			\item Besuche alle Nachbarn mit derselben \textit{id} im Verbindungsgraphen
+			\item Falls die Anzahl der besuchten Eckpunkte kleiner als \textit{val(id)} ist, ist ein Riss aufgetreten
+			\item Die besuchten Eckpunkte erhalten eine neue \textit{id}
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Brüche und Risse}
+		\centering
+		\includegraphics[scale = 0.35]{Tearing.png}
+	\end{frame}
+	
+	\begin{frame}{Zusammenfassung}
+		\begin{itemize}
+			\item Methode zur Simulation und Visualisierung von Deformationen, Brüchen und Rissen in Echtzeit-Anwendungen
+			\item Simulatiosnetz, das direkt aus einem beliebigen Visualisierungsnetz hervor geht
+			\item Convexe Polyeder als Primitve
+			\item Oriented Particle Method
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Literaturverzeichnis}
+		Alle Informationen und Bilder stammen aus folgenden Quellen:
+		\begin{itemize}
+			\item Matthias Müller, Nuttapong Chentanez, Miles Macklin: Simulating Visual Geometry, Proceedings of the 9th International Conference on Motion in Games, 2016
+			\item MÜLLER M., CHENTANEZ N.: Solid simulation with oriented particles. ACM Trans. Graph. 30, 4 (July 2011), 92:1–92:10
+			\item MÜLLER M., HEIDELBERGER B., TESCHNER M.: Meshless deformations based on shape matching. In Proc. SIGGRAPH 2005 (2005), pp. 471–478
+		\end{itemize}
+	\end{frame}
+\end{document}

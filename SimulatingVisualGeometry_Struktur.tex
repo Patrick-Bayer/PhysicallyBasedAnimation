@@ -1,0 +1,130 @@
+\documentclass[
+	11pt, 
+	DIV10,
+	a4paper, 
+	oneside, 
+	headings=normal, 
+	captions=tableheading,
+	final, 
+	numbers=noenddot
+]{scrartcl}
+
+
+\usepackage{lipsum}
+\usepackage{graphicx}
+
+
+\title{Simulating Visual Geometry}
+\subtitle{\vspace{0.5cm}Seminar: Current Topics in Physically-Based Animation}
+\author{Patrick Bayer}
+
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+
+\section{Introduction}
+	\begin{itemize}
+		\item Ultimate goal in virtual worlds: What you see is what you simulate
+		\item Unfortunately not so easy to fulfill because of performance restrictions in real time environments $\rightarrow$ two or three different representations for simulated objects (visual mesh, simulation mesh, collection of convex shapes for collision handling)
+		\item Possible mismatch of collision behaviour and visual appearance
+		\item New method with a single representation for both, simulation and collision handling, and an almost identical visualization mesh
+		\item Objects created as triangel or quad meshes that are not prepared for physically-based animation $\rightarrow$ embed the visual mesh in a simulation mesh or attach it to a more general structure
+		\item Use of a simulation mesh close to the visual mesh/directly derived from the visual mesh
+		\item Convex shapes as primitives
+		\item General graph to connect the primitives
+		\item Primitives are treated as oriented particles and represented with convex polyhedra
+		\item Oriented particle method for simulation
+	\end{itemize}
+\section{Related Work}
+	\begin{itemize}
+		\item Combining the rigid body formulation with a deformable model
+		\item Fracture and tearing algorithms
+	\end{itemize}
+\subsection{Simulation Models}
+	\begin{itemize}
+		\item General, non-conforming unstructured mesh
+		\item Unified solver based on position based dynamics
+		\item Oriented particle method
+		\item Shape matching
+	\end{itemize}
+\subsection{Embedding of a Visual Mesh}
+	\begin{itemize}
+		\item Embed visual mesh in a tetrahedal mesh and a regular grid
+		\item Blend the transformations defined in nearby particles by their position and orientation
+	\end{itemize}
+\subsection{Fracturing and Tearing}
+	\begin{itemize}
+		\item Use of pre-fractured models
+		\item Pre-defined fracture patterns at the impact location
+		\item Representing objects and fracture patterns with convex decompositions
+	\end{itemize}
+\section{The Method}
+
+\subsection{Physical Mesh Creation}
+	\begin{itemize}
+		\item Input: Visual mesh with triangle and quad faces potentially intersecting each other
+		\item Physical properties that cannot be derived from the geometry are defined by the user
+		\item Create volumetric convex primitives if needed
+		\item Average positions of the vertices are used for simulation
+	\end{itemize}
+\subsection{The Simulation Method}
+	\begin{itemize}
+		\item Oriented particle approach
+		\item Shape matching
+		\item Standard collision detection
+	\end{itemize}
+\subsubsection{Oriented Particle Method}
+	\begin{itemize}
+		\item Oriented particles store rotation, spin and the usual linear attributes (postion, velocity, ...)
+		\item overall look and feel of objects $>$ accurate reproduction of their small scale behaviour 
+		\item easy tuning of physical attributes
+		\item full control of object behaviour
+		\item based on generalization of PBD and shape matching
+	\end{itemize}
+\subsubsection{Shape Matching}
+
+\subsection{Deforming Primitives}
+	\begin{itemize}
+		\item Oriented particle method only modifies the location and orientation of primitves $\rightarrow$ potential gaps and collision artifacts
+		\item Primitives have to stay convex in order to perform collision handling and fracturing
+		\item Deform primitives in using the local affine deformation matrices	
+	\end{itemize}
+
+\subsection{The Visualization Mesh}
+	\begin{itemize}
+		\item Vertices of different primitives are joined for visualization using global IDs
+		\item Compute the resulting visual positions with help of the average positions of joined vertices
+	\end{itemize}	
+
+\subsection{Plastic Deformation}
+	\begin{itemize}
+		\item Treat the entire object as a rigid body if there are rigid parts
+		\item Rearrange the primitives only when they are plastically deformed
+		\item Deform objects if the relative normal velocity is above a threshold defined in the material
+		\item Deformation offset = relative normal velocity * time step
+	\end{itemize}
+
+\subsection{Subdivision, Fracturing and Tearing}
+	\begin{itemize}
+		\item[] \textbf{Fracture}
+		\item Connected set of convex polyhedra as fracture pattern
+		\item Align fracture pattern with the impact location
+		\item Compute the cuts of all the primitves of the objects against all fracture cells $\rightarrow$ new independent objects
+		\item Modification: Keep all the resulting pieces in the same object
+		\item Always apply fracture patterns in the undeformed configuration
+		\item[] \textbf{Tearing}
+		\item Use a threshold for the distance between connected primitives in order to check whether the connection is broken
+		\item Use only a subset of the links including the links introduced by applying a fracture pattern
+	\end{itemize}
+
+\section{Results}
+
+\section{Conclusion and Future Work}
+
+
+\bibliographystyle{alpha}
+\bibliography{references}
+
+\end{document}          
