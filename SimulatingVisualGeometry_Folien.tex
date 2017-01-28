@@ -23,7 +23,7 @@
 	\begin{frame}
 		\titlepage
 	\end{frame}
-	
+
 	%Inhaltsverzeichnis
 	\begin{frame}{Inhalt}
 		\tableofcontents
@@ -171,11 +171,11 @@
 		\end{itemize}
 	\end{frame}
 	
-	\begin{frame}
+	\begin{frame}{Die Simulationsmethode}
 		\textcolor{blue}{Generalized Position Based Dynamics}
 		\begin{itemize}
 			\item Integrationsmechanismus zur Simulation von Partikeln
-			\item Partikel haben eine Position \textbf{x}, eine Geschwindigkeit \textbf{y}, eine Rotation \textbf{q} und eine Winkelgeschwindigkeit $\omega$
+			\item Partikel haben eine Position \textbf{x}, eine Geschwindigkeit \textbf{v}, eine Rotation \textbf{q} und eine Winkelgeschwindigkeit $\omega$
 			\item Schritt 1: Vorhersage von \textbf{x} und \textbf{q}
 					\begin{center}
 						$\mathbf{x}_p \leftarrow \mathbf{x}+\mathbf{v}\Delta \mathbf{t}$
@@ -183,7 +183,7 @@
 					\begin{center}
 						$\mathbf{q}_p \leftarrow [\frac{\mathbf{\omega}}{\vert \mathbf{\omega \vert}} sin(\frac{\vert \omega \vert \Delta \mathbf{t}}{2}), cos(\frac{\vert \omega \vert \Delta \mathbf{t}}{2})]\mathbf{q}$
 					\end{center}
-			\item Schritt 2: Korrektur der Positionen \textbf{x} anhand gegebener Zwangsbedingungen
+			\item Schritt 2: Korrektur der Positionen $\mathbf{x}_p$ anhand gegebener Zwangsbedingungen
 		\end{itemize}
 	\end{frame}
 	
@@ -228,14 +228,16 @@
 	\begin{frame}{Deformation der Primitve}
 		\begin{itemize}
 			\item Konvexe Eigenschaft der Primitive muss erhalten bleiben
-					$\Rightarrow$ Nutze die Local Affine Deformation Matrix $\mathbf{A}_{pq}$
+					$\Rightarrow$ Nutze die Local Affine Deformation Matrix $\mathbf{A}$
+					\begin{center}
+						$\mathnormal{\mathbf{A}}=\sum\limits_{\mathnormal{i}}(\mathnormal{\mathbf{A}_i}+\mathnormal{\mathbf{m}_i \mathbf{x}_i \mathbf{\bar{x}}_i^T})-M\mathnormal{\mathbf{x}_{cm} \mathbf{\bar{x}}_{cm}^T}$ \\
+						$\mathnormal{\mathbf{A}_{i}}=\frac{1}{5}mr^2\mathbf{R}_\mathnormal{i}$
+					\end{center}
 			\item Berechne die Deformationsmatrix \textbf{D}
 				\begin{center}
-					$\mathnormal{\mathbf{D}}=\mathnormal{\mathbf{A \bar{A}^{-1}}}$
-				\end{center} wobei
-				\begin{center}
-					$\mathbf{\bar{A}}=\sum\limits_{i}(\mathnormal{\mathbf{\bar{A}}_i+\mathbf{m}_i\mathbf{\bar{x}}_i\mathbf{\bar{x}}_i^T})-M\mathnormal{\mathbf{\bar{x}}_{cm} \mathbf{\bar{x}}_{cm}^T}$
-				\end{center} und 
+					$\mathnormal{\mathbf{D}}=\mathnormal{\mathbf{A \bar{A}^{-1}}}$ \\
+					$\mathbf{\bar{A}}=\sum\limits_{\mathnormal{i}}(\mathnormal{\mathbf{\bar{A}}_i+\mathbf{m}_i\mathbf{\bar{x}}_i\mathbf{\bar{x}}_i^T})-M\mathnormal{\mathbf{\bar{x}}_{cm} \mathbf{\bar{x}}_{cm}^T}$
+				\end{center}
 				\begin{center}
 					$\mathnormal{\mathbf{A}_{i}}=\frac{1}{5}mr^2\mathbf{I}$
 				\end{center}
@@ -279,7 +281,7 @@
 	\begin{frame}{Brüche und Risse}
 		\textcolor{blue}{Trennbrüche:}
 		\begin{itemize}
-			\item Menge von verbundenen konvexen Polyedern als Bruchmuster bestehend aus Zellen
+			\item Menge von verbundenen konvexen Polyedern als Bruchmuster bestehend aus Bruchzellen
 		\end{itemize}
 			\begin{minipage}{0.6\textwidth}
 				\begin{itemize}
@@ -295,7 +297,7 @@
 	\end{frame}
 
 	\begin{frame}{Brüche und Risse}
-		\textcolor{blue}{Verformungsbrüche und Risse:}
+		\textcolor{blue}{detaillierte Deformation:}
 		\begin{minipage}{0.5\textwidth}
 			\begin{itemize}
 				\item Behalte alle resultierenden Teile nach einem Bruch in demselben Objekt\\
@@ -309,8 +311,9 @@
 	\end{frame}
 	
 	\begin{frame}{Brüche und Risse}
+		\textcolor{blue}{Verformungsbrüche und Risse:}
 		\begin{itemize}
-			\item Schwellenwert für die Distanz zwischen zwei Primitiven zur Identifizierung von Rissen
+			\item Schwellenwert für die Distanz zwischen zwei Primitiven zur Identifizierung von Brüchen und Rissen
 			\item Nutzer kann Risslinien vordefinieren, indem nur eine Teilmenge der Verbindungen erlaubt ist zu reißen
 		\end{itemize}
 	\end{frame}
@@ -345,7 +348,7 @@
 		\begin{itemize}
 			\item Methode zur Simulation und Visualisierung von Deformationen, Brüchen und Rissen in Echtzeit-Anwendungen
 			\item Simulatiosnetz, das direkt aus einem beliebigen Visualisierungsnetz hervor geht
-			\item Convexe Polyeder als Primitve
+			\item Konvexe Polyeder als Primitve
 			\item Oriented Particle Method
 		\end{itemize}
 	\end{frame}
