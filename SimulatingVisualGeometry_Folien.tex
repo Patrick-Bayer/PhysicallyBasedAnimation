@@ -61,9 +61,9 @@
 	\begin{frame}{Konstruktion eines Simulationsnetzes}
 		\textcolor{blue}{Verbinden der Primitive:}
 		\begin{itemize}
-			\item Ausgangssituation: Ruhelage des Objektes
 			\item Graph mit Primitiven als Knoten und Verbindungen als Kanten
-			\item Zwei Primitive $\mathnormal{i,j}$ sind verbunden $\Leftrightarrow$ Die Primitive $\mathnormal{i,j}$ berühren oder überlappen sich
+			\item Ausgangssituation: Ruhelage des Objektes
+			\item Zwei Primitive sind verbunden $\Leftrightarrow$ Die Primitive berühren oder überlappen sich
 		\end{itemize}
 	\end{frame}
 
@@ -90,10 +90,10 @@
 	\end{frame}	
 	
 	\begin{frame}{Die Simulationsmethode}
-		\textcolor{blue}{Generalized Shape Matching:}
+		\textcolor{blue}{Shape Matching:}
 		\begin{itemize}
-			\item Arbeitet mit Partikeln ohne Verbindungen
 			\item Simulation von Elastizität
+			\item Arbeitet mit Partikeln ohne Verbindungen
 		\end{itemize}
 		\begin{center}
 			\includegraphics[scale = 0.25]{ShapeMatching.png}
@@ -101,75 +101,7 @@
 		
 	\end{frame}
 
-	\begin{frame}{Die Simulationsmethode}
-		\begin{itemize}
-			\item Berechne $\mathbf{R}, \mathbf{\bar{t}}$ und $ \mathbf{t}$ durch Minimieren von \\
-					\begin{center}
-						$\sum\limits_{\mathnormal{i}}\mathnormal{\mathbf{m}_i}($\textbf{R}$(\mathnormal{\mathbf{\bar{x}}_i}-\mathnormal{\mathbf{\bar{t}}})+$\textbf{t}$-\mathnormal{\mathbf{x}_i})^2$
-					\end{center}
-			\item Es stellt sich heraus, dass \\
-					\begin{center}
-						$\mathnormal{\mathbf{\bar{t}}}=\mathnormal{\mathbf{\bar{x}}_{cm}}=\frac{\sum_{\mathnormal{i}}\mathnormal{\mathbf{m}_i} \mathnormal{\mathbf{\bar{x}}_i}}{\sum_{\mathnormal{i}}\mathnormal{\mathbf{m}_i}}$ and \textbf{t} $=\mathnormal{\mathbf{x}_{cm}}=\frac{\sum_{\mathnormal{i}}\mathnormal{\mathbf{m}_i \mathbf{x}_i}}{\sum_{\mathnormal{i}}\mathnormal{\mathbf{m}_i}}$
-					\end{center}
-			\item Seien $\mathnormal{\mathbf{q}_i}=\mathnormal{\mathbf{\bar{x}}_i}-\mathnormal{\mathbf{\bar{x}}_{cm}}$ und
-					$\mathnormal{\mathbf{p}_i}=\mathnormal{\mathbf{x}_i}-\mathnormal{\mathbf{x}_{cm}}$, dann minimiere \\
-					\begin{center}
-						$\sum\limits_{\mathnormal{i}}\mathnormal{\mathbf{m}_i}(\mathnormal{\mathbf{A}\mathbf{q}_i}-\mathnormal{\mathbf{p}_i})^2$
-					\end{center}
-					wobei \textbf{A} die optimale lineare Transformation ist.	
-								
-		\end{itemize}
-	\end{frame}
-
-	\begin{frame}{Die Simulationsmethode}
-		\begin{itemize}
-			\item Es stellt sich heraus, dass
-					\begin{center}
-						\textbf{A} $=(\sum\limits_{\mathnormal{i}}\mathnormal{\mathbf{m}_i}\mathnormal{\mathbf{p}_i}\mathnormal{\mathbf{q}_i^T})(\sum\limits_{i}\mathnormal{\mathbf{m}_i}\mathnormal{\mathbf{q}_i}\mathnormal{\mathbf{q}_i^T})^{-1}=\mathnormal{\mathbf{A}}_{pq}\mathnormal{\mathbf{A}}_{qq}$
-					\end{center}
-			\item $\mathnormal{\mathbf{A}}_{qq}$ ist symmetrisch, enthält also keine Rotation
-			\item Eine Polarzerlegung von $\mathnormal{\mathbf{A}}_{pq}$ liefert \\
-					\begin{center}
-						$\mathnormal{\mathbf{A}_{pq}}=$ \textbf{RS} wobei \textbf{S} $=\sqrt{\mathnormal{\mathbf{A}_{pq}^T} \mathnormal{\mathbf{A}_{pq}}}$ und \textbf{R} $=\mathnormal{\mathbf{A}_{pq}}\mathnormal{\mathbf{S^{-1}}}$
-					\end{center}
-			\item Berechne die Zielposition jedes Partikels
-					\begin{center}
-						$\mathnormal{\mathbf{g}_i}=\mathnormal{\mathbf{R}}(\mathnormal{\mathbf{\bar{x}}_i}-\mathnormal{\mathbf{\bar{x}}_{cm}})+\mathnormal{\mathbf{x}_{cm}}$ 
-					\end{center}
-		\end{itemize}
-	\end{frame}
-
-	\begin{frame}{Die Simulationsmethode}
-		\begin{itemize}
-			\item Co-Planarität oder Co-Linearität der Punkte $\Rightarrow$ Unstabilität
-			\item $\mathnormal{\mathbf{A}}_{pq}$ für zwei Partikelmengen mit Moment Matrizen $\mathnormal{\mathbf{A}_1}$ und $\mathnormal{\mathbf{A}_2}$ 
-				\begin{center}
-					$\mathnormal{\mathbf{A}}_{pq}=\sum\limits_{i}\mathnormal{\mathbf{m}_i \mathbf{x}_i \mathbf{\bar{x}}^T_i}-M\mathnormal{\mathbf{x}_{cm} \mathbf{\bar{x}}_{cm}^T}$
-				\end{center}
-			\item $\mathnormal{\mathbf{A}}_{pq}$ mit Moment Matrizen $\mathnormal{\mathbf{A}_i}$ für jedes einzelne Partikel
-				\begin{center}
-					$\mathnormal{\mathbf{A}_{pq}}=\sum\limits_{i}(\mathnormal{\mathbf{A}_i}+\mathnormal{\mathbf{m}_i \mathbf{x}_i \mathbf{\bar{x}}_i^T})-M\mathnormal{\mathbf{x}_{cm} \mathbf{\bar{x}}_{cm}^T}$
-				\end{center}
-				wobei $\mathnormal{M}$ die Summe der Massen $\mathbf{m}_i$ ist
-		\end{itemize}
-	\end{frame}
-
-	\begin{frame}{Die Simulationsmethode}
-		\begin{itemize}
-			\item Berechne die Moment Matrizen der einzelnen Partikel mit orthonormaler Orientierungsmatrix \textbf{R} für Kugeln mit Radius $r$ Volumen $V_r$ und Ellipsoide mit Radien $\mathnormal{a, b}$ und $\mathnormal{c}$ 
-					\begin{center}
-						$\mathnormal{\mathbf{A}_{sphere}}= \int_{V_r}\rho(\mathbf{Rx})\mathbf{x}^T dV = \frac{1}{5}mr^2\mathbf{R}$
-					\end{center}
-					\begin{center}	
-						$\mathnormal{\mathbf{A}_{ellipsoid}}= \frac{1}{5}m
-						\begin{bmatrix}
-						a^2& 0& 0 \\
-						0& b^2& 0 \\
-						0& 0& c^2
-						\end{bmatrix}\mathbf{R}$
-					\end{center}
-		\end{itemize}
-	\end{frame}
+	
 	
 	\begin{frame}{Die Simulationsmethode}
 		\textcolor{blue}{Generalized Position Based Dynamics}
@@ -225,7 +157,7 @@
 		\end{center}
 	\end{frame}
 
-	\begin{frame}{Deformation der Primitve}
+	\begin{frame}{Deformation der Primitive}
 		\begin{itemize}
 			\item Konvexe Eigenschaft der Primitive muss erhalten bleiben
 					$\Rightarrow$ Nutze die Local Affine Deformation Matrix $\mathbf{A}$
@@ -250,7 +182,7 @@
 			\includegraphics[scale = 0.275]{Curtain_2.png}
 		\end{center}
 		\begin{itemize}
-			\item Auch nach der Deformation der Primitve sind kleine Lücken zu finden
+			\item Auch nach der Deformation der Primitive sind kleine Lücken zu finden
 		\end{itemize}
 	\end{frame}
 	
@@ -332,7 +264,7 @@
 	\begin{frame}{Brüche und Risse}
 		\textcolor{blue}{Visualisierung von Rissen:}
 		\begin{itemize}
-			\item Berechne \textit{val(id)} als Anzahl der Primitve mit derselben \textit{id}
+			\item Berechne \textit{val(id)} als Anzahl der Primitive mit derselben \textit{id}
 			\item Besuche alle Nachbarn mit derselben \textit{id} im Verbindungsgraphen
 			\item Falls die Anzahl der besuchten Eckpunkte kleiner als \textit{val(id)} ist, ist ein Riss aufgetreten
 			\item Die besuchten Eckpunkte erhalten eine neue \textit{id}
@@ -347,8 +279,8 @@
 	\begin{frame}{Zusammenfassung}
 		\begin{itemize}
 			\item Methode zur Simulation und Visualisierung von Deformationen, Brüchen und Rissen in Echtzeit-Anwendungen
-			\item Simulatiosnetz, das direkt aus einem beliebigen Visualisierungsnetz hervor geht
-			\item Konvexe Polyeder als Primitve
+			\item Simulationsnetz, das direkt aus einem beliebigen Visualisierungsnetz hervor geht
+			\item Konvexe Polyeder als Primitive
 			\item Oriented Particle Method
 		\end{itemize}
 	\end{frame}
